@@ -15,6 +15,7 @@ const useSpeechRecognition = () => {
   const [translatedText, setTranslatedText] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sourceLang, setSourceLang] = useState("en");
 
   useEffect(() => {
     if (!recognition) return;
@@ -58,6 +59,7 @@ const useSpeechRecognition = () => {
     setEnhancedText("");
     setTranslatedText("");
     setError(null);
+    setSourceLang(inputLanguage.split("-")[0]);
     recognition.lang = inputLanguage;
     setIsListening(true);
     recognition.start();
@@ -75,15 +77,38 @@ const useSpeechRecognition = () => {
     speechSynthesis.speak(utterance);
   };
 
+  const setManualText = async (manualInput: string) => {
+    setText(manualInput);
+    setError(null);
+    try {
+      const enhanced = await enhanceTranscription(manualInput);
+      setEnhancedText(enhanced);
+    } catch {
+      setEnhancedText(manualInput);
+    }
+  };
+
+  const updateSourceLang = (inputLanguage: string) => {
+    setSourceLang(inputLanguage.split("-")[0]);
+  };
+
   const translate = async (targetLanguage: string) => {
+    const textToTranslate = enhancedText || text;
+    if (!textToTranslate) return;
     console.log(
       "Translating text:",
-      enhancedText,
-      "to language:",
+      textToTranslate,
+      "from:",
+      sourceLang,
+      "to:",
       targetLanguage
     );
     try {
-      const translated = await translateText(enhancedText, targetLanguage);
+      const translated = await translateText(
+        textToTranslate,
+        sourceLang,
+        targetLanguage
+      );
       console.log("Translated text:", translated);
       setTranslatedText(translated);
     } catch (translationError) {
@@ -103,6 +128,8 @@ const useSpeechRecognition = () => {
     stopListening,
     speakText,
     translate,
+    setManualText,
+    updateSourceLang,
   };
 };
 

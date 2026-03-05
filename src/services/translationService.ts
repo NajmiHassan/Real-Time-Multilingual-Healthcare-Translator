@@ -1,31 +1,26 @@
 import axios from "axios";
 
-const AZURE_TRANSLATOR_KEY = import.meta.env.VITE_AZURE_TRANSLATOR_KEY;
-const AZURE_TRANSLATOR_ENDPOINT = import.meta.env
-  .VITE_AZURE_TRANSLATOR_ENDPOINT;
-const AZURE_TRANSLATOR_REGION = import.meta.env.VITE_AZURE_TRANSLATOR_REGION;
-
 export const translateText = async (
   text: string,
-  targetLanguage: string
+  sourceLang: string,
+  targetLang: string
 ): Promise<string> => {
   try {
-    const response = await axios.post(
-      `${AZURE_TRANSLATOR_ENDPOINT}/translate?api-version=3.0&to=${targetLanguage}`,
-      [
-        {
-          Text: text,
-        },
-      ],
+    const response = await axios.get(
+      "https://api.mymemory.translated.net/get",
       {
-        headers: {
-          "Ocp-Apim-Subscription-Key": AZURE_TRANSLATOR_KEY,
-          "Content-Type": "application/json",
-          "Ocp-Apim-Subscription-Region": AZURE_TRANSLATOR_REGION, // Include region header
+        params: {
+          q: text,
+          langpair: `${sourceLang}|${targetLang}`,
         },
       }
     );
-    return response.data[0].translations[0].text;
+
+    if (response.data.responseStatus === 200) {
+      return response.data.responseData.translatedText;
+    }
+
+    throw new Error(response.data.responseDetails || "Translation failed");
   } catch (error) {
     console.error("Translation API error:", error);
     throw new Error("Failed to translate text");

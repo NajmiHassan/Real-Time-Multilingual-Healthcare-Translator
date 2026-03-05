@@ -1,5 +1,5 @@
 {
-  "name": "nao-medical-assessment",
+  "name": "real-time-healthcare-translator",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,13 +12,8 @@
   "dependencies": {
     "@types/dom-speech-recognition": "^0.0.4",
     "axios": "^1.7.9",
-    "dotenv": "^16.4.7",
-    "microsoft-cognitiveservices-speech-sdk": "^1.42.0",
-    "openai": "^4.78.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-speech-recognition": "^3.10.0",
-    "regenerator-runtime": "^0.14.1"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
